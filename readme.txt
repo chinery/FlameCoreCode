@@ -1,7 +1,3 @@
-folder structure
- - data
- - generation
- - fitting
- - common
- - external
-
+v0.1 — 2015/01/25
+    Added enough code to get generation running
+	
