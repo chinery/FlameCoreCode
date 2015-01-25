@@ -1,0 +1,8 @@
+function x = EigModel_whiten( y, e )
+%% EigModel_whiten
+% perform a whitening transform on x, given eigenmodel e.
+
+x =  e.vct * diag(sqrt(e.val))* y  + repmat( e.org, 1, size(y,2) );
+
+end
+
