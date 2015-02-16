@@ -1,2 +1,7 @@
 
 generation/oldversionnotes.txt
+0001params.mat
+generation/**/*.mat
+generation/**/*.png
+
+*.asv
