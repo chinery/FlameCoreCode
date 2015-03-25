@@ -1,12 +1,9 @@
-% %% find a frame
-% for frame = 106:130
-%     load(sprintf('../AllVolumes/frame%.3ivox.mat',frame));
-% 
-%     figure(1);clf;
-%     vol3d('cdata',min(colourvox*6,1),'alpha',min(sum(colourvox,4)*2,1));
-%     view(20,15);
-%     pause;
-% end
+% run this first for a complex (multiple lick) flame
+% the code is really old, from when I only had very bad data and was trying
+% anything to get better results, including manually labelling the number of
+% licks in each frame.
+% you probably won't want to do this(!!) especially for 100fps footage
+% you might be able to streamline the process
 
 %%
 for frame = 30:300;

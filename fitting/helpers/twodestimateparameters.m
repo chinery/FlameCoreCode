@@ -81,7 +81,6 @@ modelfun = @(mu,sig,u,s,x)(rotandsum(s.*(...%TG%
         exp(-((x-mu).^2)./(2*sig.^2)))...
     + step(mest,u,x))));
 
-modelfun = @(mu,sig,u,s,x)(step(mest,1,x).*(2.*mest.*s.*(u - exp(-(mu - (x.^2).^(1./2)).^2./(2.*sig.^2)).*(u - 1))));
 % modelfun = @(mu,sig,u,s,x)(s.*(... %TG%
 %     exp(-((x-mu).^2)./(2*sig^2)))...
 % + u);
@@ -125,7 +124,6 @@ modelfun = @(mu,sig,u,m,s,x)(rotandsum(s.*(...%TG%
         exp(-((x-mu).^2)./(2*sig.^2)))...
     + step(m,u,x))));
 
-modelfun = @(mu,sig,u,m,s,x)(step(m,1,x).*(2.*m.*s.*(u - exp(-(mu - (x.^2).^(1./2)).^2./(2.*sig.^2)).*(u - 1))));
 % modelfun = @(mu,sig,u,m,s,x)(step(m,s,x).*(... %TG%
 %     exp(-((x-mu).^2)./(2*sig.^2)))...
 % + step(m,u,x));

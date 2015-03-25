@@ -1,14 +1,17 @@
-% if(exist('frame','var'))
-%     framestart = frame;
-% elseif(~exist('framestart','var'))
-%     framestart = 44;
-% end
-% 
-% clearvars -except framestart
+% once you have run numberlicks, this code will try to find the splits
+% this code hasn't been used in a long time!! so might need some structural
+% editing
+% but you should get the gist from what's here.
+% also I never had great source data for complex flames, so I don't guarantee
+% it'll work WELL.
 
-for frame = 139%:300
+data_root = '/Users/andy/copy/work/PhD/MyData2014/alcohol1/';
+
+pointdir = dir([data_root 'points/*.mat']);
+
+for frame = 1:length(pointdir)
     frame
-    clearvars -except frame framestart
+    clearvars -except frame framestart data_root pointdir
 %     if(exist(sprintf('../AllVolumes/points/parts/frame%.3i.mat',frame),'file'))
 %         continue;
 %     end
@@ -17,7 +20,7 @@ for frame = 139%:300
         clear numberoflicks;
     end
     
-    load(sprintf('../AllVolumes/frame%.3ivox.mat',frame));
+    load(sprintf([data_root 'volumes/' pointdir(frame).name],frame));
     
     if(~exist('numberoflicks','var'))
         error('need to run numberlicks for this frame first');
@@ -27,7 +30,7 @@ for frame = 139%:300
         continue;
     end
     
-    load(sprintf('../AllVolumes/points/frame%.3ivox.mat',frame));
+        load(sprintf([data_root 'points/' pointdir(frame).name],frame));
     
    
     % k means still sucks.
@@ -47,7 +50,8 @@ for frame = 139%:300
     cutf = 0.2;
     p2(:,p2(3,:) < cutf) = [];
     
-    p2 = cleanuppoints(p2,160);
+    siz = size(vox,1);
+    p2 = cleanuppoints(p2,siz);
     
     oldp2 = p2;
 
@@ -60,7 +64,7 @@ for frame = 139%:300
     
     smallsamp = spoints;
     smallsamp(:,smallsamp(3,:) < cutf) = [];
-    guessnum = guesslicks( smallsamp, 160, false );
+    guessnum = guesslicks( smallsamp, siz, false );
     if(guessnum == numberoflicks)
 %         ix = emgm(p2,numberoflicks);
         [~,ix] = chincluster(oldp2,size(vox,1));
@@ -168,14 +172,15 @@ for frame = 139%:300
     figure(2);clf;
     hold on;
     colours = hsv(numberoflicks+1);
-    for i = 1:numberoflicks+1
+%     colours = [ 1 0 1; 0 1 1];
+    for i = 1:numberoflicks
         part = points(:,ix==i);
-        plot3(part(1,:),part(2,:),part(3,:),'.','color',colours(i,:));
+        plot3(part(1,:),part(2,:),part(3,:),'.','color',colours(i,:),'markersize',1);
     end
     view(20,15);
 
     pause;
-    save(sprintf('../AllVolumes/points/parts/frame%.3i.mat',frame),'ix');
+    save([data_root sprintf('/points/parts/frame%.3i.mat',frame)],'ix');
 end
 
 

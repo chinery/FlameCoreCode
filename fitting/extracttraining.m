@@ -1,9 +1,9 @@
 clear all
 
 % flames_root = '../MyData2014/candle1-2/nmcgcsmoothflames/';
-% flames_root = '../MyData2014/lighter1/smoothflames/';
-flames_root = 'F:/experiment2/data1/smoothtrimflames/';
-% flames_root = '/CHINERYDATA/experiment2/data1/smoothflames';
+flames_root = '../../MyData2014/lighter1/smoothflames/';
+% flames_root = 'F:/experiment2/data1/smoothtrimfixflames/';
+% flames_root = '/Volumes/CHINERYDATA/experiment2/data1/smoothtrimfixflames/';
 files = dir([flames_root '*.mat']);
 
 % control = load('pinkflame','pinkflame');
@@ -113,6 +113,8 @@ for i = 1:length(files)
             densipoints = [densipoints, densi];
             maxespoints = [maxespoints, maxes];
             
+            mapback = [mapback, i];
+            
 % %         end
     end
     
@@ -176,6 +178,7 @@ end
 match = tempmatch;
 
 % save ncolourtraining25fps points normmpoints normspoints unifopoints densipoints maxespoints match
-save latestcandle10p25fps points normmpoints normspoints unifopoints densipoints maxespoints match
+% save latestcandle10p points normmpoints normspoints unifopoints densipoints maxespoints match
+save latestlighter points normmpoints normspoints unifopoints densipoints maxespoints match
 % save pinklightertraining points normmpoints normspoints unifopoints densipoints maxespoints match trainingstartix
 % save colourtrainingtall points normmpoints normspoints unifopoints densipoints maxespoints match

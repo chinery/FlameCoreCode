@@ -1,4 +1,4 @@
-function [ s ] = fitscaleparameter(xdata, ydata, mu, sig, uest, sest, m)
+function [ s ] = twodfitscaleparameter(xdata, ydata, mu, sig, uest, sest, m)
 %UNTITLED4 Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -22,7 +22,6 @@ modelfun = @(u,s,x)(rotandsum(s.*(...%TG%
         exp(-((x-mu).^2)./(2*sig.^2)))...
     + step(m,u,x))));
 
-modelfun = @(u,s,x)(step(m,1,x).*(2.*m.*s.*(u - exp(-(mu - (x.^2).^(1./2)).^2./(2.*sig.^2)).*(u - 1))));
 
 beta0 = [uest sest];
 lower = [0 0];

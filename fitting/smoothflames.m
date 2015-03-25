@@ -1,20 +1,34 @@
 %% smooth
 clear all;
 % data_root = '../MyData2014/candle1-2/';
-% data_root = '../GenerateFlames2014/results/animations/cbatch20/animation1/';
-% data_root = '../MyData2014/lighter1/';
+% data_root = '../GenerateFlames2014/results/animations/cbatch21/animation1/';
+% data_root = '../../MyData2014/lighter1/';
 % data_root = '/Volumes/CHINERYDATA/experiment2/data1/';
-data_root = 'F:/experiment2/data1/';
-flames = dir([data_root 'trimflames/*.mat']);
-% flames = dir([data_root '*.mat']);
+data_root = '../generation/results/batch22/animation1/';
+% data_root = '../data/fitting/twod/';
+% data_root = 'F:/experiment2/data1/';
+
+% resmode: work out of a folder (e.g. generated) rather than on source data
+% (lots of folders)
+resmode = true; 
+
+if(~resmode)
+    flames = dir([data_root 'flames/*.mat']);
+else
+    flames = dir([data_root '*.mat']);
+end
 limit = length(flames);
-% limit = 200;
+%  limit = 30;
 weight = ones(1,limit);
 crud = false(1,length(flames));
 crud([3819, 3827:3831, 3836:3845, 3919:3923, 4226:4230, 4279:4377, 4401:4424, 4551:4575, 4593:4663, 5017:5029, 5247:5264, 5342:5355]) = true;
 for frame = limit:-1:1
-    load([data_root 'trimflames/' flames(frame).name]);
-%     load([data_root flames(frame).name]);
+
+    if(~resmode)
+        load([data_root 'flames/' flames(frame).name]);
+    else
+        load([data_root flames(frame).name]);
+    end
     if(isfield(flame,'normm'))
         for i = 3:-1:1
             allnormm{i}(:,frame) = flame.normm{1}(i,:)';
@@ -80,8 +94,11 @@ for frame = 1:limit
     unifo = [unifofit{1}(:,frame)'; unifofit{2}(:,frame)'; unifofit{3}(:,frame)'];
     scale = [scalefit{1}(:,frame)'; scalefit{2}(:,frame)'; scalefit{3}(:,frame)'];
     maxim = [maximfit{1}(:,frame)'; maximfit{2}(:,frame)'; maximfit{3}(:,frame)'];
-    load([data_root 'flames/' flames(frame).name]);
-%     load([data_root flames(frame).name]);
+    if(~resmode)
+        load([data_root 'flames/' flames(frame).name]);
+    else
+        load([data_root flames(frame).name]);
+    end
     flame.normm{1} = normm;
     flame.norms{1} = norms;
     flame.unifo{1} = unifo;
@@ -90,14 +107,21 @@ for frame = 1:limit
     if(crud(frame) || ~isfield(flame,'cores'))
         flame.discard(1) = true;
     end
-    save(sprintf([data_root 'smoothtrimflames/frame%05i.mat'],frame),'flame')
-%     save(sprintf([data_root 'smooth/frame%05i.mat'],frame),'flame')
+    if(~resmode)
+        save(sprintf([data_root 'smoothflames/frame%05i.mat'],frame),'flame')
+    else
+        save(sprintf([data_root 'smooth/frame%05i.mat'],frame),'flame')
+    end
     if(crud(frame) || ~isfield(flame,'cores'))
         continue
     end
     displaysingleflame(flame);view(80,0);camproj('perspective');
-    print('-dpng',sprintf([data_root 'smoothtrimflames/img/frame%05i'],frame),'-opengl');
-%     print('-dpng',sprintf([data_root 'smooth/img/frame%05i'],frame),'-opengl');
+    view(80,0);
+    if(~resmode)
+        print('-dpng',sprintf([data_root 'smoothflames/img/frame%05i'],frame),'-opengl');
+    else
+        print('-dpng',sprintf([data_root 'smooth/img/frame%05i'],frame),'-opengl');
+    end
 end
 % 
 % generateflames

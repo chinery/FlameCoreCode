@@ -27,7 +27,7 @@ points = grid(:,mask(:));
 figure(3);
 plot(points(1,:),points(2,:),'.');
 axis equal
-
+% return
 % [v, ~] = eig(cov(points'));
 v = eye(2);
 

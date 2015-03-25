@@ -10,7 +10,7 @@ for frame = limit:-1:1
     load([data_root 'flames/' flames(frame).name]);
 %     load([data_root flames(frame).name]);
     if(isfield(flame,'normm') && isfield(flame,'cores'))
-        prob = all(flame.scale{1} < 0.0001,1);
+        prob = all(flame.scale{1} < 0.0001,1) | all(flame.norms{1} < 0.0001,1);
         trims = find(~prob,1,'first');
         trime = find(~prob,1,'last');
         

@@ -1,6 +1,27 @@
-%in skeleton2013 this was superunhelpfully called 'newfitcore'. go me.
-function [core, flat] = fitcore(points,lrgpoints,maxvoxdim,hack)
-blahblah = 0;
+function [core, flat] = fitcore(points,lrgpoints,maxvoxdim,oldmethod,rotate)
+
+%
+% points    the points to fit to
+% lrgpoints gives points that are used in the averaging process, but not used to
+%           generate new points. E.g., if one lick of flame is connected to a
+%           base, then input the flame + base points as lrgpoints. This will
+%           give a smooth connection between the lick and the base, even though
+%           no 'flame points' will lie within the base.
+%           If you leave it blank, it will create a block of points around the
+%           base of the flame since that is the most problimatic area (don't
+%           want the core to drive sharply into the corner, but to stay centred)
+% maxvoxdim the resolution of the reconstruction, e.g. 128 for 128x128x128
+% oldmethod whether to use the older sliced based method that is more robust to
+%           noise, default false, but you should compare both for your data
+% rotate    whether to rotate to align with principle directions, default true
+%           (only applicable if oldmethod = true)
+
+
+
+if(nargin<5)
+    rotate = true;
+end
+
 global nn
 nn = 1/maxvoxdim;
 doplot = false;
@@ -39,8 +60,8 @@ lrgpoints(:,lrgpoints(2,:) > max(points(2,:))) = [];
 
 
 
-if(exist('hack','var') && hack)
-    core = rollbackcore(points,lrgpoints,maxvoxdim);
+if(exist('oldmethod','var') && oldmethod)
+    core = rollbackcore(points,lrgpoints,maxvoxdim,rotate);
     if(~isempty(core) && size(core,2) > 2)
         core = splinesmooth(core,points,4);
     else
@@ -228,9 +249,9 @@ while(true)
         plot3(cenbot(1),cenbot(2),cenbot(3),'*k');
         view(20,15);
         pause(0.2)
-        %         blackplot
-        blahblah = blahblah + 1;
-        print('-dpng',sprintf('./results/fitting2/%.4i',blahblah));
+%         %         blackplot
+%         blahblah = blahblah + 1;
+%         print('-dpng',sprintf('./results/fitting2/%.4i',blahblah));
     end
     
     newR = eye(3); %this is this modification we're looking to make
@@ -386,8 +407,8 @@ if(doplot)
     plot3(points(1,:),points(2,:),points(3,:),'.','markersize',1);
     plot3(top(1,:),top(2,:),top(3,:),'k*');
     % blackplot
-    blahblah = blahblah + 1;
-    print('-dpng',sprintf('./results/fitting2/%.4i',blahblah));
+%     blahblah = blahblah + 1;
+%     print('-dpng',sprintf('./results/fitting2/%.4i',blahblah));
 end
 
 % something in here to check the fit of the top half?
@@ -473,8 +494,8 @@ while(true)
         plot3(cenbot(1),cenbot(2),cenbot(3),'*k');
         view(20,15);
         %     blackplot
-        blahblah = blahblah + 1;
-        print('-dpng',sprintf('./results/fitting/%.4i',blahblah));
+%         blahblah = blahblah + 1;
+%         print('-dpng',sprintf('./results/fitting/%.4i',blahblah));
     end
     
     newR = eye(3); %this is this modification we're looking to make
@@ -639,8 +660,8 @@ if(doplot)
     figure(10)
     plot3(bottom(1,:),bottom(2,:),bottom(3,:),'k*');
     % blackplot
-    blahblah = blahblah + 1;
-    print('-dpng',sprintf('./results/fitting/%.4i',blahblah));
+%     blahblah = blahblah + 1;
+%     print('-dpng',sprintf('./results/fitting/%.4i',blahblah));
 end
 
 core = [fliplr(bottom) top];
@@ -718,7 +739,7 @@ end
 end
 
 
-function core = rollbackcore(points,lrgpoints,maxvoxdim)
+function core = rollbackcore(points,lrgpoints,maxvoxdim,rotate)
 % something didn't seem to work. Revert back to the first one which
 % at least always produces a result..
 
@@ -733,14 +754,17 @@ end
 
 cen = mean(points,2);
 
-%     if(cen(3) > 20/maxvoxdim)
+
+% NOTE : theoretically useful to uncomment this if the flame is wide and
+% pointing upwards
 % I want to put the upwards most vector in the most dominant position (last)
 % % % upmost = v(:,k);
 % % % v(:,k) = [];
 % % % v = [v upmost];
-%     end
 
-%     v = eye(3);
+if(~rotate)
+    v = eye(3);
+end
 
 qrpoints = v'*points;
 qrpoints(3,:) = round(qrpoints(3,:)./nn)*nn;
@@ -764,7 +788,11 @@ end
 
 function [bestcore,err] = splinesmooth(core,points,maxbreaks)
 global nn
-
+if(isempty(core))
+    bestcore = [];
+    err = Inf;
+    return
+end
 % figure(5)
 % plot3(points(1,:),points(2,:),points(3,:),'.r','markersize',1)
 % hold on
@@ -778,17 +806,7 @@ z = core(3, :);
 t = cumsum([0;sqrt(diff(x(:)).^2 + diff(y(:)).^2 + diff(z(:)).^2)])';
 len = max(t);
 t = t./len;
-% t = t.*100;
-% 
-% xfit = fit(t',x','smoothingspline','SmoothingParam',1);
-% yfit = fit(t',y','smoothingspline','SmoothingParam',1);
-% zfit = fit(t',z','smoothingspline','SmoothingParam',1);
-% 
-% bestcore(1,:) = xfit(t)';
-% bestcore(2,:) = yfit(t)';
-% bestcore(3,:) = zfit(t)';
-% 
-% err = 0;
+
 bestscore = Inf;
 bestcore = [];
 

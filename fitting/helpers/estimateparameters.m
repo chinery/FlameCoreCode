@@ -186,8 +186,8 @@ modelfun = @(mu,sig,u,m,s,x)(s.*(...%TG%
 % global classify
 % classify{i}(end+1,:) = ydata;
 
-p.l = f.mu;
-p.k = f.sig;
+p.mu = f.mu;
+p.sig = f.sig;
 p.u = f.u;
 p.m = f.m;
 p.s = f.s;

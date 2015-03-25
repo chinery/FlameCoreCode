@@ -1,16 +1,30 @@
 clear all
 
+% there are three methods for fitting a core to points.
+% 1. old method quantises the points into slices and finds the mid point of each
+% 2. optionally you can rotate the points first so they align with the principle
+%    directions (default)
+% 3. "new method" takes discs of points, rotating locally to match curvature
+%    moving up the flame
+% 
+% Use 2 unless there is a bad fit. Disable rotate if the flame already points
+% upwards and this makes a better result. Use "new method" if the flame is
+% particularly curvy.
+useoldmethod = true;
+rotate = true;
+
 % data_root = '../MyData2014/candle1-2/';
 % data_root = '../MyData2014/lighter1/';
-data_root = '/Volumes/CHINERYDATA/experiment2/data1/';
+% data_root = '/Volumes/CHINERYDATA/experiment2/data1/';
 % data_root = 'G:/experiment2/data1/';
+data_root = '/Users/andy/copy/work/PhD/MyData2014/lighter1/';
 pointsdir = dir([data_root 'points/*.mat']);
 %%
-for frame = 4314:5500%length(pointsdir)
+for frame = 12:21%length(pointsdir)
     frame
     clearvars -except frame data_root pointsdir
     
-%     load(sprintf([data_root 'frame%05ivox.mat'],frame));
+%     load(sprintf([data_root 'volumes/frame%05ivox.mat'],frame));
     
 %     if(numberoflicks == 0)
 %         continue;
@@ -22,6 +36,7 @@ for frame = 4314:5500%length(pointsdir)
     
 %     load(sprintf('../AllVolumes/points/parts/frame%05i.mat',frame));
     ix = ones(1,length(points));
+    
     
     success = 0;
     discarded = [];
@@ -39,7 +54,7 @@ for frame = 4314:5500%length(pointsdir)
 %             nn = 1/flame.voxsize(1);
 %             [x,y,z] = meshgrid(min(part(1,:)):nn:max(part(1,:)),min(part(2,:)):nn:max(part(2,:)),(min(part(3,:))-5*nn):nn:(min(part(3,:)+10*nn)));
 %             lrgpart = [part [x(:)';y(:)';z(:)']];%part;%points(:,ix==i | ix==max(ix));
-            [core,flat] = fitcore(part,[],flame.voxsize(1),true);
+            [core,flat] = fitcore(part,[],flame.voxsize(1),useoldmethod,rotate);
         end
         
         flat = 0;
@@ -64,7 +79,7 @@ for frame = 4314:5500%length(pointsdir)
         if(~discard && ~isempty(core))
             success = success+1;
             flame.cores{success} = core;
-            flame.flat(success) = false; % kinda redundant... keep for legacy
+            flame.flat(success) = false; % kinda redundant... 
         else
             discarded = [discarded i];
         end
@@ -95,6 +110,7 @@ for frame = 4314:5500%length(pointsdir)
     % f = splinesmooth, added bottom of core fix, improved top
     print('-dpng',sprintf([data_root 'cores/img/frame%05if'],frame));
     save(sprintf([data_root 'cores/frame%05i.mat'],frame),'flame')
+% warning('save disabled');
     
 end
 
@@ -126,6 +142,9 @@ end
 % %     end
 % % end
 return
+
+% NB: the below code smooths out the results
+
 %%
 clearvars -except data_root
 %%
