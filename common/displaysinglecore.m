@@ -1,4 +1,4 @@
-function flame = displaysinglecore(core,normm,norms,dens,max,unifo)
+function [flame,vox] = displaysinglecore(core,normm,norms,dens,max,unifo)
 
 
 flame.cores{1} = core;
@@ -8,7 +8,7 @@ flame.scale{1} = dens;
 flame.maxim{1} = max;
 flame.unifo{1} = unifo;
 
-displaysingleflame(flame);
+vox = displaysingleflame(flame);
 
 
 end

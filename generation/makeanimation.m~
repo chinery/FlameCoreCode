@@ -42,12 +42,8 @@ parameters.nearest.vmfkappa = 10;
 parameters.gaussian.num = 20;
 parameters.gaussian.scale = 0.3; % 0 to 1 probably
 
-% if lock is enabled, then the next point from training will be found for the
-% first parameter, and then the same point will be used in the other parameters
+% if lock is enabled, then the next point from training will be fo
 parameters.lock = false;
-% advanced kernel density estimation requires the code found at:
-% http://www.vicos.si/File:Maggot_v3.4.zip
-% which needs to be compiled for your system
 parameters.useadvancedkde = false;
 
 parameters.disablesave = false;

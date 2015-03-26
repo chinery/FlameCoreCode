@@ -31,12 +31,15 @@ for i = 1:length(vox)
         set(gca,'visible','off')
         set(gcf, 'InvertHardcopy', 'off');
     end
-    view(20,15);
+    view(80,0);
     if(exist('outpath','var'))
         saveas(gcf,sprintf(outpath,i),'png');
     elseif(length(vox) > 1)
         pause
     end
+end
+if(nargout > 0 && length(vox)==1)
+    vox = vox{1};
 end
 
 end
